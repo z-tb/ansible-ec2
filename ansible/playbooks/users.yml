@@ -1,0 +1,37 @@
+---
+- name: create groups and users exist
+  hosts: all
+  become: true  # tasks run with sudo privileges
+
+  tasks:
+    # create supplementary groups
+    - name: Create supplementary groups from linux_supplementary_groups variable
+      group:
+        name: "{{ item.name }}"
+        gid: "{{ item.gid }}"  # Ensure supplementary groups are created with specified GID
+        state: "{{ item.state }}"
+      loop: "{{ linux_supplementary_groups }}"
+      when: linux_supplementary_groups is defined
+
+    # create primary groups
+    - name: Create groups from linux_groups variable
+      group:
+        name: "{{ item.name }}"
+        gid: "{{ item.gid }}"  # Ensure groups are created with specified GID
+        state: "{{ item.state }}"
+      loop: "{{ linux_groups }}"
+      when: linux_groups is defined
+
+    # create users 
+    - name: Create users from linux_users variable
+      user:
+        name: "{{ item.name }}"
+        uid: "{{ item.uid }}"
+        group: "{{ item.group }}"  # Primary group name
+        home: "{{ item.home }}"
+        shell: "{{ item.shell }}"
+        state: "{{ item.state }}"
+        system: "{{ item.system }}"
+        groups: "{{ item.supplementary_groups | join(',') }}"  # Add supplementary groups
+      loop: "{{ linux_users }}"
+      when: linux_users is defined

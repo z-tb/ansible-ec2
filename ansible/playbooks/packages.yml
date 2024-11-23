@@ -1,0 +1,45 @@
+---
+- name: Install packages and clean up system
+  hosts: all
+  become: true  # root via sudo
+
+  tasks:
+    # apt-get update/apt update
+    - name: Run apt-get update
+      apt:
+        update_cache: yes 
+      register: apt_update_result
+
+    - name: Output apt update result
+      debug:
+        msg: "apt update result: {{ apt_update_result }}"
+      when: apt_update_result is defined
+
+    # auto-remove packages
+    - name: Run apt-get autoremove
+      apt:
+        autoremove: yes
+      register: apt_autoremove_result
+
+    - name: Output apt-get autoremove result
+      debug:
+        msg: "apt-get autoremove result: {{ apt_autoremove_result }}"
+      when: apt_autoremove_result is defined
+
+    # install packages listed in group_vars
+    - name: Install packages from all_packages list
+      package:
+        name: "{{ item }}"
+        state: present  # Ensure the package is installed
+      loop: "{{ all_packages }}"
+      when: all_packages is defined
+      register: package_install_results
+
+    # Output package installation results
+    - name: Output package installation results
+      debug:
+        msg: "Package {{ item.item }} installation result: {{ item.changed }}"
+      loop: "{{ package_install_results.results }}"
+      when: package_install_results is defined
+
+

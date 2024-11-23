@@ -1,5 +1,10 @@
 # Local .terraform directories
 **/.terraform/*
+# git
+.git
+
+# docker stuff
+.env
 
 # .tfstate files
 *.tfstate

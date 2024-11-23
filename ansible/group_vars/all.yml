@@ -1,0 +1,55 @@
+---
+# Define the users
+linux_users:
+  - name: foobar
+    uid: 50100
+    group: users  # Primary group
+    home: /home/foobar
+    shell: /bin/bash
+    state: present
+    system: no
+    supplementary_groups:
+      - admin
+      - developers
+
+  - name: bazbar
+    uid: 50101
+    group: users  # Primary group
+    home: /home/bazbar
+    shell: /bin/bash
+    state: present
+    system: no
+    supplementary_groups:
+      - developers
+      - testers
+
+# Define the groups (primary groups)
+linux_groups:
+  - name: users
+    gid: 50100
+    state: present
+
+# Define supplementary groups that should be created before users
+linux_supplementary_groups:
+  - name: admin
+    gid: 50200
+    state: present
+  - name: developers
+    gid: 50201
+    state: present
+  - name: testers
+    gid: 50202
+    state: 
+    
+
+# Define the list of packages to be installed
+all_packages:
+  - vim
+  - curl
+  - git
+  - htop
+  - wget
+  - net-tools
+  
+
+# Define the list of packages to be removed

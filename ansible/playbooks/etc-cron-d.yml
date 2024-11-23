@@ -1,0 +1,30 @@
+---
+- name: Deploy Cron Jobs to Hosts
+  hosts: all  # apply to all hosts in  inventory
+  become: true
+  
+  tasks:
+    - name: Check if cron_jobs variable is defined
+      debug:
+        msg: "No cron jobs defined for {{ inventory_hostname }}"
+      when: cron_jobs is not defined
+
+    - name: Copy cron job files to /etc/cron.d/
+      copy:
+        src: "etc/cron.d/{{ item }}"
+        dest: "/etc/cron.d/{{ item }}"
+        owner: root
+        group: root
+        mode: '0644'
+      loop: "{{ cron_jobs }}"
+      when: cron_jobs is defined
+      notify:
+        - restart cron
+
+  handlers:
+    - name: restart cron
+      service:
+        name: cron
+        state: restarted
+        enabled: yes
+

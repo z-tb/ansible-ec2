@@ -1,0 +1,15 @@
+---
+- name: Run collection of playbooks
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Include the packages playbook
+      import_playbook: packages.yml
+
+    - name: Include the users playbook
+      import_playbook: users.yml
+
+    - name: Include the cron jobs playbook
+      import_playbook: etc-cron-d.yml
+
